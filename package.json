@@ -25,7 +25,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "arx-convert": "^7.1.0",
-    "arx-level-generator": "^4.3.0",
+    "arx-level-generator": "^4.4.0",
     "three": "^0.157.0"
   },
   "devDependencies": {

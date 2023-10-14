@@ -1,2 +1,8 @@
-room add 500 300 500 default
+define disco {
+  ceiling custom textures [stone]-polished-concrete3.png
+  wall custom textures [stone]-dark-brick-wall.jpg
+  floor custom textures [wood]-fake-floor.jpg
+}
+
+room add 1000 300 850 disco
 with light
