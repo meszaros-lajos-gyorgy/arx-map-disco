@@ -1,0 +1,42 @@
+{
+  "name": "arx-map-disco",
+  "version": "1.0.0",
+  "description": "A map where you can make your own music with a sequencer",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "generate": "tsc && tsc-alias && node ./dist/src/index.js",
+    "rungame": "arx-level-generator --rungame",
+    "rungame:noclip": "arx-level-generator --rungame --noclip",
+    "dev": "npm run generate && npm run rungame",
+    "dev:noclip": "npm run generate && npm run rungame:noclip",
+    "prod": "export mode=\"production\" && npm run generate && npm run rungame",
+    "release:normal": "export variant=\"normal\" && export outputDir=\"./output\" && export mode=\"production\" && rm -rf cache && npm run generate",
+    "release:premium": "export variant=\"premium\" && export outputDir=\"./output\" && export mode=\"production\" && rm -rf cache && npm run generate"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meszaros-lajos-gyorgy/arx-map-disco.git"
+  },
+  "keywords": [
+    "arx-fatalis"
+  ],
+  "author": "Lajos Mészáros <m_lajos@hotmail.com>",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "arx-convert": "^7.1.0",
+    "arx-level-generator": "^4.3.0",
+    "three": "^0.157.0"
+  },
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+    "@types/node": "^20.8.6",
+    "@types/three": "^0.157.0",
+    "tsc-alias": "^1.8.8",
+    "typescript": "^5.2.2"
+  },
+  "bugs": {
+    "url": "https://github.com/meszaros-lajos-gyorgy/arx-map-disco/issues"
+  },
+  "homepage": "https://github.com/meszaros-lajos-gyorgy/arx-map-disco#readme"
+}
