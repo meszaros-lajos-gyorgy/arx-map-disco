@@ -12,7 +12,8 @@
     "dev:noclip": "npm run generate && npm run rungame:noclip",
     "prod": "export mode=\"production\" && npm run generate && npm run rungame",
     "release:normal": "export variant=\"normal\" && export outputDir=\"./output\" && export mode=\"production\" && rm -rf cache && npm run generate",
-    "release:premium": "export variant=\"premium\" && export outputDir=\"./output\" && export mode=\"production\" && rm -rf cache && npm run generate"
+    "release:premium": "export variant=\"premium\" && export outputDir=\"./output\" && export mode=\"production\" && rm -rf cache && npm run generate",
+    "clear-cache": "rm -rf cache"
   },
   "repository": {
     "type": "git",
@@ -25,7 +26,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "arx-convert": "^7.1.0",
-    "arx-level-generator": "^4.4.0",
+    "arx-level-generator": "^4.4.1",
     "three": "^0.157.0"
   },
   "devDependencies": {

@@ -21,6 +21,7 @@ import { MathUtils, Vector2 } from 'three'
 import { Button } from '@/entities/Button.js'
 import { Cursor } from '@/entities/Cursor.js'
 import { Timer } from '@/entities/Timer.js'
+import { DiscoFloorTile, floorTileMesh } from './entities/DiscoFloorTile.js'
 
 const settings = new Settings()
 
@@ -211,6 +212,23 @@ meshes.forEach((mesh) => {
 })
 
 map.entities.push(...buttons.flat(), timer, lever, cursor, ...instruments)
+
+// ---------------------------
+
+const discoTile = new DiscoFloorTile({
+  position: new Vector3(0, -10, 0),
+  // orientation: new Rotation(0, 0, 0),
+})
+
+map.entities.push(discoTile)
+
+floorTileMesh.translateX(map.config.offset.x - 60)
+floorTileMesh.translateY(map.config.offset.y + -10)
+floorTileMesh.translateZ(map.config.offset.z)
+applyTransformations(floorTileMesh)
+map.polygons.addThreeJsMesh(floorTileMesh, {
+  tryToQuadify: DONT_QUADIFY,
+})
 
 // ---------------------------
 
