@@ -3,7 +3,7 @@ import { Expand } from 'arx-convert/utils'
 import { Entity, EntityConstructorPropsWithoutSrc, EntityModel, Material, Rotation, Texture } from 'arx-level-generator'
 import { createPlaneMesh } from 'arx-level-generator/prefabs/mesh'
 import { Interactivity, Shadow } from 'arx-level-generator/scripting/properties'
-import { getNonIndexedVertices } from 'arx-level-generator/tools/mesh'
+import { getNonIndexedVertices, scaleUV } from 'arx-level-generator/tools/mesh'
 import { applyTransformations } from 'arx-level-generator/utils'
 import { BufferAttribute, BufferGeometry, MathUtils, Vector2 } from 'three'
 
@@ -58,7 +58,7 @@ export class DiscoFloorTile extends Entity {
         originIdx: 1,
       }),
       otherDependencies: [discoTile1, discoTile2, discoTile3, discoTile4, discoTile5],
-      orientation: new Rotation(0, MathUtils.degToRad(-90), 0),
+      // orientation: new Rotation(0, MathUtils.degToRad(-90), 0),
       ...props,
     })
 
