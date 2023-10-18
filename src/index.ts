@@ -134,7 +134,7 @@ const cursor = new Cursor({
   orientation: new Rotation(0, MathUtils.degToRad(-90), 0),
 })
 
-timer.isMuted = false
+timer.isMuted = settings.mode === 'development'
 timer.script?.on('tick', () => {
   return `
     if (^#param1 == 0) {
@@ -216,15 +216,14 @@ map.entities.push(...buttons.flat(), timer, lever, cursor, ...instruments)
 // ---------------------------
 
 const discoTile = new DiscoFloorTile({
-  position: new Vector3(0, -10, 0),
-  // orientation: new Rotation(0, 0, 0),
+  position: new Vector3(-60, -80, 200),
 })
 
 map.entities.push(discoTile)
 
 floorTileMesh.translateX(map.config.offset.x - 60)
 floorTileMesh.translateY(map.config.offset.y + -10)
-floorTileMesh.translateZ(map.config.offset.z)
+floorTileMesh.translateZ(map.config.offset.z + 100)
 applyTransformations(floorTileMesh)
 map.polygons.addThreeJsMesh(floorTileMesh, {
   tryToQuadify: DONT_QUADIFY,
