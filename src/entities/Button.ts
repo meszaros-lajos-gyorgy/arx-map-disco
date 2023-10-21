@@ -16,6 +16,10 @@ export class Button extends Cube {
     const onSkin = new TweakSkin(Texture.stoneGroundCavesWet05, Texture.aliciaRoomMur02)
     const offSkin = new TweakSkin(Texture.stoneGroundCavesWet05, Texture.stoneHumanPriest4)
     const updateSkin = new ScriptSubroutine('update_skin', () => {
+      if (!this.script?.isRoot) {
+        return ``
+      }
+
       return `
         if (${this.propIsOn.name} == 1) {
           ${onSkin.toString()}
@@ -26,16 +30,11 @@ export class Button extends Cube {
     })
 
     this.script?.properties.push(this.propIsOn)
-
-    // TODO: only add this subroutine to the script if isRoot
     this.script?.subroutines.push(updateSkin)
 
     this.script
-      ?.on('init', () => {
-        if (!this.script?.isRoot) {
-          return ``
-        }
-
+      ?.whenRoot()
+      .on('init', () => {
         return `
           ${Interactivity.on}
           ${new Scale(0.1)}
@@ -43,20 +42,8 @@ export class Button extends Cube {
           ${new LoadAnim('action1', 'push_button')}
         `
       })
-      .on('initend', () => {
-        if (!this.script?.isRoot) {
-          return ''
-        }
-
-        return `
-          ${updateSkin.invoke()}
-        `
-      })
+      .on('initend', () => updateSkin.invoke())
       .on('clicked', () => {
-        if (!this.script?.isRoot) {
-          return ''
-        }
-
         const { delay } = useDelay()
 
         return `
@@ -72,10 +59,6 @@ export class Button extends Cube {
         `
       })
       .on('trigger', () => {
-        if (!this.script?.isRoot) {
-          return ''
-        }
-
         return `
           if (^$param1 == "in") {
             if (${this.propIsOn.name} == 1) {
