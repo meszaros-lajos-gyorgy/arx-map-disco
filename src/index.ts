@@ -84,6 +84,9 @@ const numberOfBeats = buttonPattern[0].length
 
 const offsetLeft = -360
 
+const rootButton = new Button()
+rootButton.script?.makeIntoRoot()
+
 const buttons: Button[][] = []
 for (let y = 0; y < formattedButtonPattern.length; y++) {
   const row: Button[] = []
@@ -105,7 +108,9 @@ for (let y = 0; y < formattedButtonPattern.length; y++) {
     button.script?.on(
       'init',
       ((i) => () => {
-        return `setgroup button_column_${i}`
+        return `
+          setgroup button_column_${i}
+        `
       })(cntr),
     )
     button.script?.on('trigger', () => {
@@ -140,42 +145,16 @@ timer.script?.on('tick', () => {
     if (^#param1 == 0) {
       sendevent move_x ${cursor.ref} -${(numberOfBeats - 1 + 7) * 20}
     } else {
-      if(^#param1 == 4) {
+      set @float ^#param1
+      div @float 4
+      set §int @float
+      dec @float §int
+
+      // if (((float)(^#param1 / 4) - (int)(^#param1 / 4)) == 0) {
+      if (@float == 0) {
         sendevent move_x ${cursor.ref} 40
       } else {
-        if (^#param1 == 8) {
-          sendevent move_x ${cursor.ref} 40
-        } else {
-          if(^#param1 == 12) {
-            sendevent move_x ${cursor.ref} 40
-          } else {
-            if(^#param1 == 16) {
-              sendevent move_x ${cursor.ref} 40
-            } else {
-              if (^#param1 == 20) {
-                sendevent move_x ${cursor.ref} 40
-              } else {
-                if(^#param1 == 24) {
-                  sendevent move_x ${cursor.ref} 40
-                } else {
-                  if(^#param1 == 28) {
-                    sendevent move_x ${cursor.ref} 40
-                  } else {
-                    if (^#param1 == 32) {
-                      sendevent move_x ${cursor.ref} 40
-                    } else {
-                      if(^#param1 == 36) {
-                        sendevent move_x ${cursor.ref} 40
-                      } else {
-                        sendevent move_x ${cursor.ref} 20
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+        sendevent move_x ${cursor.ref} 20
       }
     }
   `
@@ -211,7 +190,7 @@ meshes.forEach((mesh) => {
   map.polygons.addThreeJsMesh(mesh, { tryToQuadify: DONT_QUADIFY, shading: SHADING_SMOOTH })
 })
 
-map.entities.push(...buttons.flat(), timer, lever, cursor, ...instruments)
+map.entities.push(rootButton, ...buttons.flat(), timer, lever, cursor, ...instruments)
 
 // ---------------------------
 
