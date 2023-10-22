@@ -11,6 +11,7 @@ import {
 import { Lever, SoundPlayer } from 'arx-level-generator/prefabs/entity'
 import { loadRooms } from 'arx-level-generator/prefabs/rooms'
 import { Label, Scale } from 'arx-level-generator/scripting/properties'
+import { pickRandom } from 'arx-level-generator/utils/random'
 import { MathUtils, Vector2 } from 'three'
 import { Button } from '@/entities/Button.js'
 import { Cursor } from '@/entities/Cursor.js'
@@ -187,6 +188,7 @@ for (let x = 0; x < 9; x++) {
   for (let y = 0; y < 4; y++) {
     const discoTile = new DiscoFloorTile({
       position: new Vector3(-450 + x * 100, -5, 350 - y * 100),
+      skinIdx: pickRandom([1, 2, 3, 4, 5]),
     })
     discoTiles.push(discoTile)
   }
