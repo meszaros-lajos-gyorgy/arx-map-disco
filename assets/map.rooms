@@ -4,5 +4,5 @@ define disco {
   floor custom textures [wood]-fake-floor.jpg
 }
 
-room add 1000 500 850 disco
+room add 1000 300 850 disco
 with light
