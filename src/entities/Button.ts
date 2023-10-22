@@ -1,3 +1,4 @@
+import { Expand } from 'arx-convert/utils'
 import { EntityConstructorPropsWithoutSrc, Texture } from 'arx-level-generator'
 import { Cube } from 'arx-level-generator/prefabs/entity'
 import { ScriptSubroutine } from 'arx-level-generator/scripting'
@@ -5,13 +6,23 @@ import { LoadAnim, TweakSkin } from 'arx-level-generator/scripting/commands'
 import { useDelay } from 'arx-level-generator/scripting/hooks'
 import { Interactivity, Scale, Speed, Variable } from 'arx-level-generator/scripting/properties'
 
+type ButtonConstructorProps = Expand<
+  EntityConstructorPropsWithoutSrc & {
+    isOn: boolean
+    isToggleSwitch: boolean
+  }
+>
+
 export class Button extends Cube {
   private propIsOn: Variable<boolean>
+  private propIsToggleSwitch: Variable<boolean>
 
-  constructor(props: EntityConstructorPropsWithoutSrc = {}) {
+  constructor({ isOn, isToggleSwitch, ...props }: ButtonConstructorProps = { isOn: false, isToggleSwitch: true }) {
     super(props)
     this.withScript()
-    this.propIsOn = new Variable('bool', 'on', false)
+
+    this.propIsOn = new Variable('bool', 'on', isOn)
+    this.propIsToggleSwitch = new Variable('bool', 'is_toggle_switch', isToggleSwitch)
 
     const onSkin = new TweakSkin(Texture.stoneGroundCavesWet05, Texture.aliciaRoomMur02)
     const offSkin = new TweakSkin(Texture.stoneGroundCavesWet05, Texture.stoneHumanPriest4)
@@ -29,7 +40,7 @@ export class Button extends Cube {
       `
     })
 
-    this.script?.properties.push(this.propIsOn)
+    this.script?.properties.push(this.propIsOn, this.propIsToggleSwitch)
     this.script?.subroutines.push(updateSkin)
 
     this.script
@@ -49,12 +60,14 @@ export class Button extends Cube {
         return `
           ${Interactivity.off}
           ${delay(500)} ${Interactivity.on}
-          if (${this.propIsOn.name} == 1) {
-            set ${this.propIsOn.name} 0
-          } else {
-            set ${this.propIsOn.name} 1
+          if (${this.propIsToggleSwitch.name} == 1) {
+            if (${this.propIsOn.name} == 1) {
+              set ${this.propIsOn.name} 0
+            } else {
+              set ${this.propIsOn.name} 1
+            }
+            ${updateSkin.invoke()}
           }
-          ${updateSkin.invoke()}
           playanim action1
         `
       })
@@ -78,5 +91,13 @@ export class Button extends Cube {
   }
   off() {
     this.propIsOn.value = false
+  }
+
+  get isToggleSwitch() {
+    return this.propIsToggleSwitch.value
+  }
+
+  set isToggleSwitch(value: boolean) {
+    this.propIsToggleSwitch.value = value
   }
 }

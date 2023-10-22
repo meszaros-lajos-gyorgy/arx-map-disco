@@ -1,27 +1,23 @@
-import { ArxPolygonFlags } from 'arx-convert/types'
 import {
   ArxMap,
   Audio,
   DONT_QUADIFY,
   HudElements,
-  Material,
   Rotation,
   SHADING_SMOOTH,
   Settings,
-  Texture,
   Vector3,
 } from 'arx-level-generator'
 import { Lever, SoundPlayer } from 'arx-level-generator/prefabs/entity'
-import { createPlaneMesh } from 'arx-level-generator/prefabs/mesh'
 import { loadRooms } from 'arx-level-generator/prefabs/rooms'
 import { Label, Scale } from 'arx-level-generator/scripting/properties'
-import { scaleUV } from 'arx-level-generator/tools/mesh'
-import { applyTransformations } from 'arx-level-generator/utils'
 import { MathUtils, Vector2 } from 'three'
 import { Button } from '@/entities/Button.js'
 import { Cursor } from '@/entities/Cursor.js'
+import { DiscoFloorTile } from '@/entities/DiscoFloorTile.js'
 import { Timer } from '@/entities/Timer.js'
-import { DiscoFloorTile, floorTileMesh } from './entities/DiscoFloorTile.js'
+import { jarreZoolookologie } from '@/patterns.js'
+import { createSynthPanel } from '@/prefabs/synthPanel.js'
 
 const settings = new Settings()
 
@@ -33,37 +29,7 @@ map.hud.hide(HudElements.Minimap)
 
 // ---------------------------
 
-const createSynthPanel = (position: Vector3, size: Vector2) => {
-  const metal = Material.fromTexture(
-    Texture.fromCustomFile({
-      filename: 'dark-[metal]-grid.jpg',
-      sourcePath: 'textures',
-    }),
-    {
-      flags: ArxPolygonFlags.Tiled,
-    },
-  )
-
-  const panel = createPlaneMesh({ size, texture: metal })
-  panel.rotateX(MathUtils.degToRad(90))
-  scaleUV(new Vector2(0.5, 0.5), panel.geometry)
-  applyTransformations(panel)
-  panel.translateX(position.x)
-  panel.translateY(position.y)
-  panel.translateZ(position.z)
-
-  return [panel]
-}
-
-// prettier-ignore
-const formattedButtonPattern = [
-  '.... .... .... .... .... .... .... ....',
-  '.... .... .... .... ..xx xx.. x... ....',
-  '.... .... .... .... .... .... .... ....',
-  '.... .... .... .... .... .... .... ....',
-  '.... x... .... x... .... x... .... x...',
-  'x.x. .x.. x.xx .x.. x.x. .x.. x... ...x',
-]
+const pattern = jarreZoolookologie
 
 // ---------------------------
 
@@ -76,7 +42,7 @@ const instruments = [
   new SoundPlayer({ audio: Audio.clothOnCloth1 }),
 ]
 
-const buttonPattern = formattedButtonPattern.map((row) => {
+const buttonPattern = pattern.map((row) => {
   return row.replaceAll(' ', '')
 })
 
@@ -87,12 +53,13 @@ const offsetLeft = -360
 const rootButton = new Button()
 rootButton.script?.makeIntoRoot()
 
-const buttons: Button[][] = []
-for (let patternY = 0; patternY < formattedButtonPattern.length; patternY++) {
+const buttons: Button[] = []
+for (let patternY = 0; patternY < pattern.length; patternY++) {
   const row: Button[] = []
+
   let x = -1
-  for (let patternX = 0; patternX < formattedButtonPattern[patternY].length; patternX++) {
-    if (formattedButtonPattern[patternY][patternX] === ' ') {
+  for (let patternX = 0; patternX < pattern[patternY].length; patternX++) {
+    if (pattern[patternY][patternX] === ' ') {
       continue
     }
 
@@ -101,8 +68,10 @@ for (let patternY = 0; patternY < formattedButtonPattern.length; patternY++) {
     const button = new Button({
       position: new Vector3(offsetLeft + patternX * 20, -220 + patternY * 30, 400),
       orientation: new Rotation(0, MathUtils.degToRad(-90), 0),
+      isOn: false,
+      isToggleSwitch: true,
     })
-    if (formattedButtonPattern[patternY][patternX] === 'x') {
+    if (pattern[patternY][patternX] === 'x') {
       button.on()
     }
     button.script
@@ -121,13 +90,28 @@ for (let patternY = 0; patternY < formattedButtonPattern.length; patternY++) {
       })
     row.push(button)
   }
-  buttons.push(row)
+
+  const trySoundButton = new Button({
+    position: new Vector3(-60 + offsetLeft, -220 + patternY * 30, 400),
+    orientation: new Rotation(0, MathUtils.degToRad(-90), 0),
+    isOn: true,
+    isToggleSwitch: false,
+  })
+  trySoundButton.script?.on('clicked', () => {
+    return `sendevent play ${instruments[patternY].ref} nop`
+  })
+
+  buttons.push(...row, trySoundButton)
 }
+
+// -----------------
 
 const cursor = new Cursor({
   position: new Vector3(offsetLeft, -220 - 30, 400),
   orientation: new Rotation(0, MathUtils.degToRad(-90), 0),
 })
+
+// -----------------
 
 const timer = new Timer({
   numberOfSteps: numberOfBeats,
@@ -165,10 +149,12 @@ timer.script
     `
   })
 
+// -----------------
+
 const levers: Lever[] = []
-for (let y = 0; y < formattedButtonPattern.length; y++) {
+for (let y = 0; y < pattern.length; y++) {
   const lever = new Lever({
-    position: new Vector3(-40 + offsetLeft, -225 + y * 30, 400),
+    position: new Vector3(-30 + offsetLeft, -225 + y * 30, 400),
     orientation: new Rotation(MathUtils.degToRad(90), 0, 0),
     isSilent: true,
   })
@@ -190,31 +176,37 @@ for (let y = 0; y < formattedButtonPattern.length; y++) {
   levers.push(lever)
 }
 
+// -----------------
+
+const rootDiscoTile = new DiscoFloorTile()
+rootDiscoTile.script?.makeIntoRoot()
+
+const discoTiles: DiscoFloorTile[] = []
+
+for (let x = 0; x < 9; x++) {
+  for (let y = 0; y < 4; y++) {
+    const discoTile = new DiscoFloorTile({
+      position: new Vector3(-450 + x * 100, -5, 350 - y * 100),
+    })
+    discoTiles.push(discoTile)
+  }
+}
+
 // ---------------------------
 
 const synthPanel = createSynthPanel(
   map.config.offset.clone().add(new Vector3(0, -150, 400)),
-  new Vector2(formattedButtonPattern[0].length * 20 + 70, 190),
+  new Vector2(pattern[0].length * 20 + 70 + 60, 190),
 )
 
-const meshes = [...synthPanel]
+// ---------------------------
+
+const meshes = [synthPanel]
 meshes.forEach((mesh) => {
   map.polygons.addThreeJsMesh(mesh, { tryToQuadify: DONT_QUADIFY, shading: SHADING_SMOOTH })
 })
 
-map.entities.push(rootButton, ...buttons.flat(), timer, ...levers, cursor, ...instruments)
-
-// ---------------------------
-
-const rootDiscoTile = new DiscoFloorTile()
-rootDiscoTile.script?.makeIntoRoot()
-map.entities.push(rootDiscoTile)
-
-const discoTile = new DiscoFloorTile({
-  position: new Vector3(0, -5, 0),
-})
-
-map.entities.push(discoTile)
+map.entities.push(rootButton, ...buttons, timer, ...levers, cursor, ...instruments, rootDiscoTile, ...discoTiles)
 
 // ---------------------------
 

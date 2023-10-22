@@ -38,7 +38,7 @@ type DiscoFloorTileProps = Expand<
 
 // ---------------------------------
 
-export const floorTileMesh = createPlaneMesh({
+const floorTileMesh = createPlaneMesh({
   size: new Vector2(100, 100),
   texture: Material.fromTexture(discoTile1, {
     flags: ArxPolygonFlags.None,
