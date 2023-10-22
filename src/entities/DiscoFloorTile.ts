@@ -63,6 +63,11 @@ export class DiscoFloorTile extends Entity {
 
     this.withScript()
 
-    this.script?.properties.push(Interactivity.off, Shadow.off)
+    this.script?.whenRoot().on('init', () => {
+      return `
+        ${Interactivity.off}
+        ${Shadow.off}
+      `
+    })
   }
 }
