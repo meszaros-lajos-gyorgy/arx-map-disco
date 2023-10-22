@@ -1,16 +1,51 @@
 define disco {
   ceiling custom textures [stone]-polished-concrete3.png
   wall custom textures [stone]-dark-brick-wall.jpg
-  floor custom textures [wood]-fake-floor.jpg
+  floor custom textures [stone]-granite.jpg
 }
 
-room add 1000 300 450 disco
+define center {
+  ceiling custom textures [stone]-polished-concrete3.png
+  wall custom textures [stone]-dark-brick-wall.jpg
+  floor custom textures [stone]-granite.jpg
+}
+
+define lounge {
+  ceiling custom textures [stone]-polished-concrete3.png
+  wall custom textures [stone]-dark-brick-wall.jpg
+  floor custom textures [fabric]-carpet.jpg
+}
+
+define corridor {
+  ceiling custom textures [stone]-polished-concrete3.png
+  wall custom textures [stone]-polished-concrete2.png
+  floor custom textures [stone]-granite.jpg
+}
+
+# dance floor
+room add 1000 350 450 disco
 with light
-room add 1100 600 600 disco z-- y-
-cursor save center
-room add 1000 300 450 disco z-- y-
+cursor save dance-floor
+
+# stage
+room add 1000 350 400 disco y- z++
 with light
 
-cursor restore center
-room add 300 250 200 disco x++ y-
+# center area
+cursor restore dance-floor
+room add 1100 500 600 center z-- y-
+cursor save center
+
+# lounge
+room add 1000 350 450 lounge z-- y-
 with light
+
+# corridor towards restrooms
+cursor restore center
+room add 500 250 200 corridor x++ y-
+with light
+room add 200 250 500 corridor x+ z-- y-
+with light
+# TODO: add male restroom
+
+# TODO: add female restroom

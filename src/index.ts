@@ -33,7 +33,8 @@ map.hud.hide(HudElements.Minimap)
 
 const pattern = jarreZoolookologie
 
-const synthWallPosZ = 200
+const synthWallPosZ = 600
+const synthWallPosY = -30
 
 // ---------------------------
 
@@ -70,7 +71,7 @@ for (let patternY = 0; patternY < pattern.length; patternY++) {
     x++
 
     const button = new Button({
-      position: new Vector3(offsetLeft + patternX * 20, -220 + patternY * 30, synthWallPosZ),
+      position: new Vector3(offsetLeft + patternX * 20, -220 + patternY * 30 + synthWallPosY, synthWallPosZ),
       orientation: new Rotation(0, MathUtils.degToRad(-90), 0),
       isOn: false,
       isToggleSwitch: true,
@@ -96,7 +97,7 @@ for (let patternY = 0; patternY < pattern.length; patternY++) {
   }
 
   const trySoundButton = new Button({
-    position: new Vector3(-60 + offsetLeft, -220 + patternY * 30, synthWallPosZ),
+    position: new Vector3(-60 + offsetLeft, -220 + patternY * 30 + synthWallPosY, synthWallPosZ),
     orientation: new Rotation(0, MathUtils.degToRad(-90), 0),
     isOn: true,
     isToggleSwitch: false,
@@ -111,7 +112,7 @@ for (let patternY = 0; patternY < pattern.length; patternY++) {
 // -----------------
 
 const cursor = new Cursor({
-  position: new Vector3(offsetLeft, -220 - 30, synthWallPosZ),
+  position: new Vector3(offsetLeft, -250 + synthWallPosY, synthWallPosZ),
   orientation: new Rotation(0, MathUtils.degToRad(-90), 0),
 })
 
@@ -124,7 +125,7 @@ const discoTiles: DiscoFloorTile[] = []
 for (let x = 0; x < 9; x++) {
   for (let y = 0; y < 4; y++) {
     const discoTile = new DiscoFloorTile({
-      position: new Vector3(-450 + x * 100, -5, synthWallPosZ - 50 - y * 100),
+      position: new Vector3(-450 + x * 100, -5, 150 - y * 100),
       skinIdx: pickRandom([1, 2, 3, 4, 5]),
     })
     discoTiles.push(discoTile)
@@ -176,7 +177,7 @@ timer.script
 const levers: Lever[] = []
 for (let y = 0; y < pattern.length; y++) {
   const lever = new Lever({
-    position: new Vector3(-30 + offsetLeft, -225 + y * 30, synthWallPosZ),
+    position: new Vector3(-30 + offsetLeft, -225 + y * 30 + synthWallPosY, synthWallPosZ),
     orientation: new Rotation(MathUtils.degToRad(90), 0, 0),
     isSilent: true,
   })
@@ -201,26 +202,58 @@ for (let y = 0; y < pattern.length; y++) {
 // ---------------------------
 
 const synthPanel = createSynthPanel({
-  position: map.config.offset.clone().add(new Vector3(0, -150, synthWallPosZ)),
+  position: map.config.offset.clone().add(new Vector3(0, -150 + synthWallPosY, synthWallPosZ)),
   size: new Vector2(pattern[0].length * 20 + 70 + 60, 190),
 })
 
 // ---------------------------
 
+// TODO: add wooden stage and lute under sequencer panel
+// TODO: add armchairs and tables to the lounge
+
+// ---------------------------
+
 const lamps = [
   createLamp({
-    position: new Vector3(-480, -200, 300),
+    position: new Vector3(-480, -200, 400),
+    variant: 'wall',
+  }),
+  createLamp({
+    position: new Vector3(480, -200, 400),
+    orientation: new Rotation(0, MathUtils.degToRad(180), 0),
+    variant: 'wall',
   }),
   createLamp({
     position: new Vector3(-480, -200, 0),
-  }),
-  createLamp({
-    position: new Vector3(480, -200, 300),
-    orientation: new Rotation(0, MathUtils.degToRad(180), 0),
+    variant: 'wall',
   }),
   createLamp({
     position: new Vector3(480, -200, 0),
     orientation: new Rotation(0, MathUtils.degToRad(180), 0),
+    variant: 'wall',
+  }),
+
+  createLamp({
+    position: new Vector3(300, -550, -225 - 300),
+    variant: 'ceiling',
+  }),
+  createLamp({
+    position: new Vector3(0, -550, -225 - 300),
+    variant: 'ceiling',
+  }),
+  createLamp({
+    position: new Vector3(-300, -550, -225 - 300),
+    variant: 'ceiling',
+  }),
+
+  createLamp({
+    position: new Vector3(-480, -200, -600 - 450),
+    variant: 'wall',
+  }),
+  createLamp({
+    position: new Vector3(480, -200, -600 - 450),
+    orientation: new Rotation(0, MathUtils.degToRad(180), 0),
+    variant: 'wall',
   }),
 ]
 
