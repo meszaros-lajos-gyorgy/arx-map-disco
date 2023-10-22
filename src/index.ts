@@ -14,7 +14,7 @@ import {
 import { Lever, SoundPlayer } from 'arx-level-generator/prefabs/entity'
 import { createPlaneMesh } from 'arx-level-generator/prefabs/mesh'
 import { loadRooms } from 'arx-level-generator/prefabs/rooms'
-import { Label } from 'arx-level-generator/scripting/properties'
+import { Label, Scale } from 'arx-level-generator/scripting/properties'
 import { scaleUV } from 'arx-level-generator/tools/mesh'
 import { applyTransformations } from 'arx-level-generator/utils'
 import { MathUtils, Vector2 } from 'three'
@@ -88,125 +88,133 @@ const rootButton = new Button()
 rootButton.script?.makeIntoRoot()
 
 const buttons: Button[][] = []
-for (let y = 0; y < formattedButtonPattern.length; y++) {
+for (let patternY = 0; patternY < formattedButtonPattern.length; patternY++) {
   const row: Button[] = []
-  let cntr = -1
-  for (let x = 0; x < formattedButtonPattern[y].length; x++) {
-    if (formattedButtonPattern[y][x] === ' ') {
+  let x = -1
+  for (let patternX = 0; patternX < formattedButtonPattern[patternY].length; patternX++) {
+    if (formattedButtonPattern[patternY][patternX] === ' ') {
       continue
     }
 
-    cntr++
+    x++
 
     const button = new Button({
-      position: new Vector3(offsetLeft + x * 20, -220 + y * 30, 400),
+      position: new Vector3(offsetLeft + patternX * 20, -220 + patternY * 30, 400),
       orientation: new Rotation(0, MathUtils.degToRad(-90), 0),
     })
-    if (formattedButtonPattern[y][x] === 'x') {
+    if (formattedButtonPattern[patternY][patternX] === 'x') {
       button.on()
     }
-    button.script?.on(
-      'init',
-      ((i) => () => {
+    button.script
+      ?.on(
+        'init',
+        ((colIdx, rowIdx) => () => {
+          return `setgroup btn_${colIdx}_${rowIdx}`
+        })(x, patternY),
+      )
+      .on('trigger', () => {
         return `
-          setgroup button_column_${i}
+          if (^$param1 == "out") {
+            sendevent play ${instruments[patternY].ref} nop
+          }
         `
-      })(cntr),
-    )
-    button.script?.on('trigger', () => {
-      return `
-        if (^$param1 == "out") {
-          sendevent play ${instruments[y].ref} nop
-        }
-      `
-    })
+      })
     row.push(button)
   }
   buttons.push(row)
 }
-
-const timer = new Timer({ numberOfSteps: numberOfBeats, notesPerBeat: 4, bpm: 120 })
-
-const lever = new Lever({
-  position: new Vector3(-40 + offsetLeft, -220 + (buttonPattern.length / 2) * 30 - 20, 400),
-  orientation: new Rotation(MathUtils.degToRad(90), 0, 0),
-  isSilent: true,
-})
-lever.script?.properties.push(new Label('sound on/off'))
 
 const cursor = new Cursor({
   position: new Vector3(offsetLeft, -220 - 30, 400),
   orientation: new Rotation(0, MathUtils.degToRad(-90), 0),
 })
 
-timer.isMuted = settings.mode === 'development'
-timer.script?.on('tick', () => {
-  return `
-    if (^#param1 == 0) {
-      sendevent move_x ${cursor.ref} -${(numberOfBeats - 1 + 7) * 20}
-    } else {
-      set @float ^#param1
-      div @float 4
-      set §int @float
-      dec @float §int
-
-      // if (((float)(^#param1 / 4) - (int)(^#param1 / 4)) == 0) {
-      if (@float == 0) {
-        sendevent move_x ${cursor.ref} 40
+const timer = new Timer({
+  numberOfSteps: numberOfBeats,
+  notesPerBeat: 4,
+  bpm: 120,
+  numberOfInstruments: instruments.length,
+  startsMuted: settings.mode === 'development',
+})
+timer.script
+  ?.on('tick', () => {
+    return `
+      if (^#param1 == 0) {
+        sendevent move_x ${cursor.ref} -${(numberOfBeats - 1 + 7) * 20}
       } else {
-        sendevent move_x ${cursor.ref} 20
-      }
-    }
-  `
-})
-timer.script?.on('trigger', () => {
-  return `
-    sendevent -g "button_column_~^#param1~" trigger "in"
-  `
-})
+        set @float ^#param1
+        div @float 4
+        set §int @float
+        dec @float §int
 
-lever.isPulled = !timer.isMuted
-lever.script?.on('custom', () => {
-  return `
-    if (^$param1 == "on") {
-      sendevent custom ${timer.ref} "on"
-    }
-    if (^$param1 == "off") {
-      sendevent custom ${timer.ref} "off"
-    }
-  `
-})
+        // if (((float)(^#param1 / 4) - (int)(^#param1 / 4)) == 0) {
+        if (@float == 0) {
+          sendevent move_x ${cursor.ref} 40
+        } else {
+          sendevent move_x ${cursor.ref} 20
+        }
+      }
+    `
+  })
+  .on('trigger', () => {
+    const targetGroup = '"btn_~^#param1~_~^#param2~"'
+    const eventName = 'trigger'
+    const params = ['in']
+    return `
+      sendevent -g ${targetGroup} ${eventName} "${params.join(' ')}"
+    `
+  })
+
+const levers: Lever[] = []
+for (let y = 0; y < formattedButtonPattern.length; y++) {
+  const lever = new Lever({
+    position: new Vector3(-40 + offsetLeft, -225 + y * 30, 400),
+    orientation: new Rotation(MathUtils.degToRad(90), 0, 0),
+    isSilent: true,
+  })
+  lever.isPulled = settings.mode !== 'development'
+  lever.script?.properties.push(new Label('sound on/off'), new Scale(0.5))
+  lever.script?.on(
+    'custom',
+    ((rowIdx) => () => {
+      return `
+        if (^$param1 == "on") {
+          sendevent custom ${timer.ref} "on ${rowIdx}"
+        }
+        if (^$param1 == "off") {
+          sendevent custom ${timer.ref} "off ${rowIdx}"
+        }
+      `
+    })(y),
+  )
+  levers.push(lever)
+}
 
 // ---------------------------
 
 const synthPanel = createSynthPanel(
-  new Vector3(6000 + 0, -150, 6000 + 400),
+  map.config.offset.clone().add(new Vector3(0, -150, 400)),
   new Vector2(formattedButtonPattern[0].length * 20 + 70, 190),
 )
 
 const meshes = [...synthPanel]
-
 meshes.forEach((mesh) => {
   map.polygons.addThreeJsMesh(mesh, { tryToQuadify: DONT_QUADIFY, shading: SHADING_SMOOTH })
 })
 
-map.entities.push(rootButton, ...buttons.flat(), timer, lever, cursor, ...instruments)
+map.entities.push(rootButton, ...buttons.flat(), timer, ...levers, cursor, ...instruments)
 
 // ---------------------------
 
+const rootDiscoTile = new DiscoFloorTile()
+rootDiscoTile.script?.makeIntoRoot()
+map.entities.push(rootDiscoTile)
+
 const discoTile = new DiscoFloorTile({
-  position: new Vector3(-60, -80, 200),
+  position: new Vector3(0, -5, 0),
 })
 
 map.entities.push(discoTile)
-
-floorTileMesh.translateX(map.config.offset.x - 60)
-floorTileMesh.translateY(map.config.offset.y + -10)
-floorTileMesh.translateZ(map.config.offset.z + 100)
-applyTransformations(floorTileMesh)
-map.polygons.addThreeJsMesh(floorTileMesh, {
-  tryToQuadify: DONT_QUADIFY,
-})
 
 // ---------------------------
 
