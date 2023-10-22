@@ -19,6 +19,7 @@ import { DiscoFloorTile } from '@/entities/DiscoFloorTile.js'
 import { Timer } from '@/entities/Timer.js'
 import { jarreZoolookologie } from '@/patterns.js'
 import { createSynthPanel } from '@/prefabs/synthPanel.js'
+import { createLamp } from './prefabs/lamp.js'
 
 const settings = new Settings()
 
@@ -197,10 +198,36 @@ for (let y = 0; y < pattern.length; y++) {
 
 // ---------------------------
 
-const synthPanel = createSynthPanel(
-  map.config.offset.clone().add(new Vector3(0, -150, 400)),
-  new Vector2(pattern[0].length * 20 + 70 + 60, 190),
-)
+const synthPanel = createSynthPanel({
+  position: map.config.offset.clone().add(new Vector3(0, -150, 400)),
+  size: new Vector2(pattern[0].length * 20 + 70 + 60, 190),
+})
+
+// ---------------------------
+
+const lamps = [
+  createLamp({
+    position: new Vector3(-480, -200, 300),
+  }),
+  createLamp({
+    position: new Vector3(-480, -200, 0),
+  }),
+  createLamp({
+    position: new Vector3(-480, -200, -300),
+  }),
+  createLamp({
+    position: new Vector3(480, -200, 300),
+    orientation: new Rotation(0, MathUtils.degToRad(180), 0),
+  }),
+  createLamp({
+    position: new Vector3(480, -200, 0),
+    orientation: new Rotation(0, MathUtils.degToRad(180), 0),
+  }),
+  createLamp({
+    position: new Vector3(480, -200, -300),
+    orientation: new Rotation(0, MathUtils.degToRad(180), 0),
+  }),
+]
 
 // ---------------------------
 
@@ -209,7 +236,19 @@ meshes.forEach((mesh) => {
   map.polygons.addThreeJsMesh(mesh, { tryToQuadify: DONT_QUADIFY, shading: SHADING_SMOOTH })
 })
 
-map.entities.push(rootButton, ...buttons, timer, ...levers, cursor, ...instruments, rootDiscoTile, ...discoTiles)
+map.entities.push(
+  rootButton,
+  ...buttons,
+  timer,
+  ...levers,
+  cursor,
+  ...instruments,
+  rootDiscoTile,
+  ...discoTiles,
+  ...lamps.flatMap(({ entities }) => entities),
+)
+
+map.lights.push(...lamps.flatMap(({ lights }) => lights))
 
 // ---------------------------
 

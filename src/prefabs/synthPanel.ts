@@ -5,7 +5,12 @@ import { scaleUV } from 'arx-level-generator/tools/mesh'
 import { applyTransformations } from 'arx-level-generator/utils'
 import { MathUtils, Vector2 } from 'three'
 
-export const createSynthPanel = (position: Vector3, size: Vector2) => {
+type createSynthPanelProps = {
+  position: Vector3
+  size: Vector2
+}
+
+export const createSynthPanel = ({ position, size }: createSynthPanelProps) => {
   const metal = Material.fromTexture(
     Texture.fromCustomFile({
       filename: 'dark-[metal]-grid.jpg',
