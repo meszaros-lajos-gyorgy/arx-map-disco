@@ -114,6 +114,22 @@ const cursor = new Cursor({
 
 // -----------------
 
+const rootDiscoTile = new DiscoFloorTile()
+rootDiscoTile.script?.makeIntoRoot()
+
+const discoTiles: DiscoFloorTile[] = []
+for (let x = 0; x < 9; x++) {
+  for (let y = 0; y < 4; y++) {
+    const discoTile = new DiscoFloorTile({
+      position: new Vector3(-450 + x * 100, -5, 350 - y * 100),
+      skinIdx: pickRandom([1, 2, 3, 4, 5]),
+    })
+    discoTiles.push(discoTile)
+  }
+}
+
+// -----------------
+
 const timer = new Timer({
   numberOfSteps: numberOfBeats,
   notesPerBeat: 4,
@@ -124,6 +140,8 @@ const timer = new Timer({
 timer.script
   ?.on('tick', () => {
     return `
+      sendevent -g disco_tile change_skin nop
+
       if (^#param1 == 0) {
         sendevent move_x ${cursor.ref} -${(numberOfBeats - 1 + 7) * 20}
       } else {
@@ -175,23 +193,6 @@ for (let y = 0; y < pattern.length; y++) {
     })(y),
   )
   levers.push(lever)
-}
-
-// -----------------
-
-const rootDiscoTile = new DiscoFloorTile()
-rootDiscoTile.script?.makeIntoRoot()
-
-const discoTiles: DiscoFloorTile[] = []
-
-for (let x = 0; x < 9; x++) {
-  for (let y = 0; y < 4; y++) {
-    const discoTile = new DiscoFloorTile({
-      position: new Vector3(-450 + x * 100, -5, 350 - y * 100),
-      skinIdx: pickRandom([1, 2, 3, 4, 5]),
-    })
-    discoTiles.push(discoTile)
-  }
 }
 
 // ---------------------------

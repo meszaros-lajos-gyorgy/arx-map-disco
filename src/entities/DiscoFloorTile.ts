@@ -110,10 +110,24 @@ export class DiscoFloorTile extends Entity {
       ?.whenRoot()
       .on('init', () => {
         return `
+          setgroup disco_tile
           ${Interactivity.off}
           ${Shadow.off}
         `
       })
       .on('initend', () => updateSkin.invoke())
+      .on('change_skin', () => {
+        return `
+          random 50 {
+            accept
+          }
+
+          inc ${this.propSkinIdx.name} 1
+          if (${this.propSkinIdx.name} > 5) {
+            set ${this.propSkinIdx.name} 1
+          }
+          ${updateSkin.invoke()}
+        `
+      })
   }
 }
