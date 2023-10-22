@@ -4,5 +4,13 @@ define disco {
   floor custom textures [wood]-fake-floor.jpg
 }
 
-room add 1000 300 850 disco
+room add 1000 300 450 disco
+with light
+room add 1100 600 600 disco z-- y-
+cursor save center
+room add 1000 300 450 disco z-- y-
+with light
+
+cursor restore center
+room add 300 250 200 disco x++ y-
 with light
