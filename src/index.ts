@@ -1,7 +1,9 @@
 import {
   ArxMap,
   Audio,
+  Color,
   DONT_QUADIFY,
+  Entity,
   HudElements,
   Rotation,
   SHADING_SMOOTH,
@@ -10,8 +12,9 @@ import {
 } from 'arx-level-generator'
 import { Lever, SoundPlayer } from 'arx-level-generator/prefabs/entity'
 import { loadRooms } from 'arx-level-generator/prefabs/rooms'
-import { Label, Scale } from 'arx-level-generator/scripting/properties'
-import { pickRandom } from 'arx-level-generator/utils/random'
+import { Label, Scale, Shadow } from 'arx-level-generator/scripting/properties'
+import { createLight } from 'arx-level-generator/tools'
+import { pickRandom, randomBetween } from 'arx-level-generator/utils/random'
 import { MathUtils, Vector2 } from 'three'
 import { Button } from '@/entities/Button.js'
 import { Cursor } from '@/entities/Cursor.js'
@@ -33,7 +36,7 @@ map.hud.hide(HudElements.Minimap)
 
 const pattern = jarreZoolookologie
 
-const synthWallPosZ = 600
+const synthWallPosZ = 500
 const synthWallPosY = -30
 
 // ---------------------------
@@ -209,17 +212,40 @@ const synthPanel = createSynthPanel({
 // ---------------------------
 
 // TODO: add wooden stage and lute under sequencer panel
-// TODO: add armchairs and tables to the lounge
+
+const loungeLight = createLight({
+  position: new Vector3(0, -175, -1000),
+  radius: 1000,
+  intensity: 0.5,
+})
+map.lights.push(loungeLight)
+
+const armchair1 = new Entity({
+  src: 'items/movable/seat_armchair2_rich',
+  position: new Vector3(350, 0, -1000),
+  orientation: new Rotation(0, MathUtils.degToRad(180 - 45 + randomBetween(-15, 15)), 0),
+})
+armchair1.withScript()
+armchair1.script?.properties.push(Shadow.off)
+const armchair2 = new Entity({
+  src: 'items/movable/seat_armchair2_rich',
+  position: new Vector3(150, 0, -1050),
+  orientation: new Rotation(0, MathUtils.degToRad(45 + randomBetween(-15, 15)), 0),
+})
+armchair2.withScript()
+armchair2.script?.properties.push(Shadow.off)
+
+map.entities.push(armchair1, armchair2)
 
 // ---------------------------
 
 const lamps = [
   createLamp({
-    position: new Vector3(-480, -200, 400),
+    position: new Vector3(-480, -200, 300),
     variant: 'wall',
   }),
   createLamp({
-    position: new Vector3(480, -200, 400),
+    position: new Vector3(480, -200, 300),
     orientation: new Rotation(0, MathUtils.degToRad(180), 0),
     variant: 'wall',
   }),
@@ -234,24 +260,24 @@ const lamps = [
   }),
 
   createLamp({
-    position: new Vector3(300, -550, -225 - 300),
+    position: new Vector3(300, -550, -525),
     variant: 'ceiling',
   }),
   createLamp({
-    position: new Vector3(0, -550, -225 - 300),
+    position: new Vector3(0, -550, -525),
     variant: 'ceiling',
   }),
   createLamp({
-    position: new Vector3(-300, -550, -225 - 300),
+    position: new Vector3(-300, -550, -525),
     variant: 'ceiling',
   }),
 
   createLamp({
-    position: new Vector3(-480, -200, -600 - 450),
+    position: new Vector3(-480, -200, -1000),
     variant: 'wall',
   }),
   createLamp({
-    position: new Vector3(480, -200, -600 - 450),
+    position: new Vector3(480, -200, -1000),
     orientation: new Rotation(0, MathUtils.degToRad(180), 0),
     variant: 'wall',
   }),

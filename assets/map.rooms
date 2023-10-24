@@ -28,7 +28,7 @@ with light
 cursor save dance-floor
 
 # stage
-room add 1000 350 400 disco y- z++
+room add 1000 350 300 disco y- z++
 with light
 
 # center area
@@ -37,8 +37,8 @@ room add 1100 500 600 center z-- y-
 cursor save center
 
 # lounge
-room add 1000 350 450 lounge z-- y-
-with light
+room add 1000 350 350 lounge z-- y-
+# with light
 
 # corridor towards restrooms
 cursor restore center
