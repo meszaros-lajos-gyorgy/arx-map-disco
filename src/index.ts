@@ -1,7 +1,6 @@
 import {
   ArxMap,
   Audio,
-  Color,
   DONT_QUADIFY,
   Entity,
   HudElements,
@@ -213,6 +212,8 @@ const synthPanel = createSynthPanel({
 
 // TODO: add wooden stage and lute under sequencer panel
 
+// ---------------------------
+
 const loungeLight = createLight({
   position: new Vector3(0, -175, -1000),
   radius: 1000,
@@ -222,20 +223,35 @@ map.lights.push(loungeLight)
 
 const armchair1 = new Entity({
   src: 'items/movable/seat_armchair2_rich',
-  position: new Vector3(350, 0, -1000),
+  position: new Vector3(350, 0, -1000 + randomBetween(-10, 10)),
   orientation: new Rotation(0, MathUtils.degToRad(180 - 45 + randomBetween(-15, 15)), 0),
 })
 armchair1.withScript()
 armchair1.script?.properties.push(Shadow.off)
 const armchair2 = new Entity({
   src: 'items/movable/seat_armchair2_rich',
-  position: new Vector3(150, 0, -1050),
+  position: new Vector3(150, 0, -1050 + randomBetween(-10, 10)),
   orientation: new Rotation(0, MathUtils.degToRad(45 + randomBetween(-15, 15)), 0),
 })
 armchair2.withScript()
 armchair2.script?.properties.push(Shadow.off)
 
-map.entities.push(armchair1, armchair2)
+const armchair3 = new Entity({
+  src: 'items/movable/seat_armchair2_rich',
+  position: new Vector3(-150, 0, -1000 + randomBetween(-10, 10)),
+  orientation: new Rotation(0, MathUtils.degToRad(180 - 45 + randomBetween(-15, 15)), 0),
+})
+armchair3.withScript()
+armchair3.script?.properties.push(Shadow.off)
+const armchair4 = new Entity({
+  src: 'items/movable/seat_armchair2_rich',
+  position: new Vector3(-350, 0, -1050 + randomBetween(-10, 10)),
+  orientation: new Rotation(0, MathUtils.degToRad(45 + randomBetween(-15, 15)), 0),
+})
+armchair4.withScript()
+armchair4.script?.properties.push(Shadow.off)
+
+map.entities.push(armchair1, armchair2, armchair3, armchair4)
 
 // ---------------------------
 
