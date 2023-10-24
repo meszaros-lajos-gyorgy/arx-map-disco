@@ -7,14 +7,16 @@ import {
   Rotation,
   SHADING_SMOOTH,
   Settings,
+  Texture,
   Vector3,
 } from 'arx-level-generator'
 import { Lever, SoundPlayer } from 'arx-level-generator/prefabs/entity'
 import { loadRooms } from 'arx-level-generator/prefabs/rooms'
 import { Label, Scale, Shadow } from 'arx-level-generator/scripting/properties'
 import { createLight } from 'arx-level-generator/tools'
+import { scaleUV, toArxCoordinateSystem } from 'arx-level-generator/tools/mesh'
 import { pickRandom, randomBetween } from 'arx-level-generator/utils/random'
-import { MathUtils, Vector2 } from 'three'
+import { CylinderGeometry, MathUtils, Mesh, MeshBasicMaterial, Vector2 } from 'three'
 import { Button } from '@/entities/Button.js'
 import { Cursor } from '@/entities/Cursor.js'
 import { DiscoFloorTile } from '@/entities/DiscoFloorTile.js'
@@ -210,7 +212,30 @@ const synthPanel = createSynthPanel({
 
 // ---------------------------
 
-// TODO: add wooden stage and lute under sequencer panel
+let cylinder = new CylinderGeometry(300, 300, 1200, 8, 1, false, MathUtils.degToRad(90), MathUtils.degToRad(180))
+cylinder = toArxCoordinateSystem(cylinder)
+scaleUV(new Vector2(7, 7), cylinder)
+
+const wood = new MeshBasicMaterial({
+  map: Texture.l4DwarfWoodBoard02,
+})
+
+const mesh = new Mesh(cylinder, wood)
+mesh.position.add(map.config.offset.clone().add(new Vector3(0, 600 - 35, 530)))
+mesh.scale.multiply(new Vector3(1.5, 1, 1))
+
+map.polygons.addThreeJsMesh(mesh)
+
+// TODO: subdivide polygons
+
+// ---------------------------
+
+const lute = new Entity({
+  src: 'items/special/luth',
+  position: new Vector3(-250, -35 - 20, 300),
+  orientation: new Rotation(0, MathUtils.degToRad(15), MathUtils.degToRad(90)),
+})
+map.entities.push(lute)
 
 // ---------------------------
 
