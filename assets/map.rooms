@@ -45,7 +45,7 @@ cursor restore center
 room add 500 250 200 corridor x++ y-
 with light
 room add 200 250 500 corridor x+ z-- y-
-with light
+# with light
 # TODO: add male restroom
 
 # TODO: add female restroom
