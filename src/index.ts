@@ -13,7 +13,7 @@ import {
 import { Lever, SoundPlayer } from 'arx-level-generator/prefabs/entity'
 import { loadRooms } from 'arx-level-generator/prefabs/rooms'
 import { Label, Scale, Shadow } from 'arx-level-generator/scripting/properties'
-import { createLight } from 'arx-level-generator/tools'
+import { createLight, createZone } from 'arx-level-generator/tools'
 import { scaleUV, toArxCoordinateSystem } from 'arx-level-generator/tools/mesh'
 import { pickRandom, randomBetween } from 'arx-level-generator/utils/random'
 import { CylinderGeometry, MathUtils, Mesh, MeshBasicMaterial, Vector2 } from 'three'
@@ -236,6 +236,37 @@ const lute = new Entity({
   orientation: new Rotation(0, MathUtils.degToRad(15), MathUtils.degToRad(90)),
 })
 map.entities.push(lute)
+
+// ---------------------------
+
+// Tizzy and all the junk her script requires
+
+const key = Entity.key
+key.id = 8
+
+const marker = Entity.marker
+marker.id = 174
+
+const mug = new Entity({
+  src: 'items/movable/mug',
+  id: 18,
+  position: new Vector3(0, 200, 0),
+})
+
+const barZone = createZone({
+  position: new Vector3(0, 100, 0),
+  size: new Vector3(10, 10, 10),
+  name: 'bar',
+})
+map.zones.push(barZone)
+
+const tizzy = new Entity({
+  src: 'npc/human_base',
+  id: 97,
+  position: new Vector3(-400, 0, -500),
+  orientation: new Rotation(0, MathUtils.degToRad(-90), 0),
+})
+map.entities.push(mug, marker, key, tizzy)
 
 // ---------------------------
 
