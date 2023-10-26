@@ -244,9 +244,6 @@ map.entities.push(lute)
 const key = Entity.key
 key.id = 8
 
-const marker = Entity.marker
-marker.id = 174
-
 const mug = new Entity({
   src: 'items/movable/mug',
   id: 18,
@@ -263,10 +260,16 @@ map.zones.push(barZone)
 const tizzy = new Entity({
   src: 'npc/human_base',
   id: 97,
-  position: new Vector3(-400, 0, -500),
+  position: new Vector3(-350, 0, -500),
   orientation: new Rotation(0, MathUtils.degToRad(-90), 0),
 })
-map.entities.push(mug, marker, key, tizzy)
+
+const whereThePlayerStandsWhenTalkingWithTizzy = Entity.marker.at({
+  position: tizzy.position.clone().add(new Vector3(200, 0, 0)),
+})
+whereThePlayerStandsWhenTalkingWithTizzy.id = 174
+
+map.entities.push(mug, whereThePlayerStandsWhenTalkingWithTizzy, key, tizzy)
 
 // ---------------------------
 
